@@ -25,9 +25,20 @@ data GameState = Playing World
                deriving (Show)
 
 
-initialWorld = World { snake = [(-1, x) | x <- [4,3..0]]
+initialWorld = World { snake = [(-1, x) | x <- [(-20),(-21)..(-24)]]
                      , food = (19, 19)
                      , direction = North
                      , rand = R.mkStdGen 0
                      , limits = (-24, 25)
                      }
+
+movePosition :: Direction -> Position -> Position
+movePosition d (x, y) = case d of
+    North -> (x, y + 1)
+    South -> (x, y - 1)
+    East -> (x + 1, y)
+    West -> (x - 1, y)
+
+moveSnake :: Direction -> World -> World
+moveSnake newDirection world = world { snake = (movePosition newDirection $ head (snake world)):(init (snake world)), direction = newDirection }
+

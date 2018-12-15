@@ -41,6 +41,12 @@ render world = pictures
   , renderFood world
   ]
 
+update :: Float -> World -> World
+update sec world
+  | sec > 0.0001 = (moveSnake (direction world)  world)
+  | otherwise = world
+
+
 window :: Display
 window = InWindow "Snake" (fieldW, fieldH) (100, 100)
 
@@ -50,4 +56,4 @@ background = black
 fps = 60
 
 appMain :: IO ()
-appMain = play window background fps initialWorld render (\_ a -> a) (\_ a -> a) 
+appMain = play window background fps initialWorld render (\_ a -> a) update
