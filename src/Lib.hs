@@ -43,7 +43,7 @@ render world = pictures
 
 update :: Float -> World -> World
 update sec world
-  | sec > 0.0001 = (moveSnake (direction world)  world)
+  | sec >= 0.3  = (moveSnake (direction world)  world)
   | otherwise = world
 
 
@@ -53,7 +53,7 @@ window = InWindow "Snake" (fieldW, fieldH) (100, 100)
 background :: Color
 background = black 
 
-fps = 60
+fps = 3
 
 appMain :: IO ()
 appMain = play window background fps initialWorld render (\_ a -> a) update
