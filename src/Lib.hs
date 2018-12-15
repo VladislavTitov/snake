@@ -25,10 +25,21 @@ cellH = 10 -- ^ высота ~
 fromGameCoords :: Position -> GPosition
 fromGameCoords (x, y) = (fromIntegral x * cellW - (cellW / 2), fromIntegral y * cellH - (cellH / 2))
 
+drawPosition :: Position -> Picture
+drawPosition pos = translate x y $ color white $ rectangleSolid cellW cellH
+  where (x, y) = fromGameCoords pos
 
+renderSnake :: World -> Picture
+renderSnake world = pictures [drawPosition p | p <- snake world]
 
+renderFood :: World -> Picture
+renderFood world = drawPosition $ food world
 
-
+render :: World -> Picture
+render world = pictures 
+  [ renderSnake world
+  , renderFood world
+  ]
 
 window :: Display
 window = InWindow "Snake" (fieldW, fieldH) (100, 100)
@@ -38,9 +49,5 @@ background = black
 
 fps = 60
 
-drawing :: Picture
-drawing = translate x y $ color white $ rectangleSolid cellW cellH
-	where (x, y) = fromGameCoords (25, 25)
-
 appMain :: IO ()
-appMain = play window background fps 1 (\s -> drawing) (\_ a -> a) (\_ a -> a) 
+appMain = play window background fps initialWorld render (\_ a -> a) (\_ a -> a) 

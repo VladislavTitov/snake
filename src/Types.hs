@@ -24,3 +24,10 @@ data GameState = Playing World
                | GameOver
                deriving (Show)
 
+
+initialWorld = World { snake = [(-1, x) | x <- [4,3..0]]
+                     , food = (19, 19)
+                     , direction = North
+                     , rand = R.mkStdGen 0
+                     , limits = (-24, 25)
+                     }
