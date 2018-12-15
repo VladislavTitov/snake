@@ -1,3 +1,7 @@
+module Types where
+
+import qualified System.Random as R
+
 data Direction = North
                | South
                | East
