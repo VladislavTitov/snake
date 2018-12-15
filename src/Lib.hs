@@ -29,6 +29,7 @@ fromGameCoords (x, y) = (fromIntegral x * cellW - (cellW / 2), fromIntegral y * 
 drawPosition :: Position -> Color -> Picture
 drawPosition pos col = translate x y $ color col $ rectangleSolid cellW cellH
   where (x, y) = fromGameCoords pos
+
 foodColor :: Color
 foodColor = green
 
@@ -57,21 +58,23 @@ update _ world = (advance $ handleCollision world)
 
 handleInput :: Event -> World -> World
 handleInput (EventKey (SpecialKey KeyUp) _ _ _) world
-  | (direction world) == North = moveSnake world
+  | (direction world) == North = update 0 world
   | otherwise = removeOpposite $ world {newdir = North}
 
 handleInput (EventKey (SpecialKey KeyDown) _ _ _) world
-  | (direction world) == South = moveSnake world
+  | (direction world) == South = update 0 world
   | otherwise = removeOpposite $ world {newdir = South}
 
 handleInput (EventKey (SpecialKey KeyLeft) _ _ _) world
-  | (direction world) == West = moveSnake world
+  | (direction world) == West = update 0 world
   | otherwise = removeOpposite $ world {newdir = West}
 
 handleInput (EventKey (SpecialKey KeyRight) _ _ _) world
-  | (direction world) == East = moveSnake world
+  | (direction world) == East = update 0 world
   | otherwise = removeOpposite $ world {newdir = East}
 handleInput _ world = world
+
+handleInput (EventKey (SpecialKey KeyHome) _ _ _) world = world {gameState = Playing}
 
 window :: Display
 window = InWindow "Snake" (fieldW, fieldH) (100, 100)
