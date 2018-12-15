@@ -3,6 +3,7 @@ module Lib
     ) where
 
 import Graphics.Gloss
+import Graphics.Gloss.Interface.Pure.Game
 import Types
 
 type GPosition = (Float, Float) -- Аналог типа Позиция для Глосса (отличие в типах кортежа)
@@ -36,16 +37,25 @@ renderFood :: World -> Picture
 renderFood world = drawPosition $ food world
 
 render :: World -> Picture
-render world = pictures 
-  [ renderSnake world
-  , renderFood world
-  ]
+render world 
+            | (gameState world) == GameOver = pictures 
+                                              [ blank
+                                              , translate (-170) (-20) $ scale 0.5 0.5 $ color white $ text "Game Over"
+                                              ]
+            | otherwise = pictures 
+						  [ renderSnake world
+						  , renderFood world
+						  ]
 
 update :: Float -> World -> World
-update sec world
-  | sec >= 0.3  = (moveSnake (direction world)  world)
-  | otherwise = world
+update _ world = (advance $ handleCollision world)
 
+handleInput :: Event -> World -> World
+handleInput (EventKey (SpecialKey KeyUp) _ _ _) world = removeOpposite $ world {newdir = North}
+handleInput (EventKey (SpecialKey KeyDown) _ _ _) world = removeOpposite $ world {newdir = South}
+handleInput (EventKey (SpecialKey KeyLeft) _ _ _) world = removeOpposite $ world {newdir = West}
+handleInput (EventKey (SpecialKey KeyRight) _ _ _) world = removeOpposite $ world {newdir = East}
+handleInput _ world = world
 
 window :: Display
 window = InWindow "Snake" (fieldW, fieldH) (100, 100)
@@ -53,7 +63,7 @@ window = InWindow "Snake" (fieldW, fieldH) (100, 100)
 background :: Color
 background = black 
 
-fps = 3
+fps = 5
 
 appMain :: IO ()
-appMain = play window background fps initialWorld render (\_ a -> a) update
+appMain = play window background fps initialWorld render handleInput update
