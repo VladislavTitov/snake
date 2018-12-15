@@ -59,8 +59,8 @@ eat world newFood newRand = let s = (snake world); n = (newdir world) in world {
 
 removeOpposite :: World -> World
 removeOpposite world
-	| (newdir world) == opposite (direction world) = world {newdir = (direction world)}
-	| otherwise = world
+  | (newdir world) == opposite (direction world) = world {newdir = (direction world)}
+  | otherwise = world
 
 randomPosition :: R.RandomGen g => (Int, Int) -> g -> (Position, g)
 randomPosition (maxr, maxc) g =
