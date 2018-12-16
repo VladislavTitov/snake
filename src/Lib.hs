@@ -48,6 +48,11 @@ render world
                                               [ blank
                                               , translate (-170) (-20) $ scale 0.5 0.5 $ color red $ text "Game Over"
                                               ]
+            | (gameState world) == Paused = pictures
+                                            	            [ renderSnake world
+                                            						  , renderFood world,
+                                            						  translate (-110) (-20) $ scale 0.5 0.5 $ color blue $ text "Paused"
+                                            						  ]
             | otherwise = pictures
 	            [ renderSnake world
 						  , renderFood world
@@ -57,6 +62,11 @@ update :: Float -> World -> World
 update _ world = (advance $ handleCollision world)
 
 handleInput :: Event -> World -> World
+handleInput (EventKey (Char 'p') _ _ _) world = world {gameState = Paused}
+handleInput (EventKey (Char 's') _ _ _) world
+ |  (gameState world) == GameOver = initialWorld
+ |  otherwise = world {gameState = Playing}
+
 handleInput (EventKey (SpecialKey KeyUp) _ _ _) world
   | (direction world) == North = update 0 world
   | otherwise = removeOpposite $ world {newdir = North}
@@ -72,11 +82,8 @@ handleInput (EventKey (SpecialKey KeyLeft) _ _ _) world
 handleInput (EventKey (SpecialKey KeyRight) _ _ _) world
   | (direction world) == East = update 0 world
   | otherwise = removeOpposite $ world {newdir = East}
+
 handleInput _ world = world
-
-handleInput (EventKey (SpecialKey KeyHome) _ _ _) world = world {gameState = Paused}
-handleInput (EventKey (SpecialKey KeyF5) _ _ _) world = initialWorld
-
 
 window :: Display
 window = InWindow "Snake" (fieldW, fieldH) (100, 100)
