@@ -36,26 +36,35 @@ foodColor = green
 snakeColor :: Color
 snakeColor = white
 
+wallColor :: Color
+wallColor = yellow
+
 renderSnake :: World -> Picture
 renderSnake world = pictures [drawPosition p snakeColor | p <- snake world]
 
 renderFood :: World -> Picture
 renderFood world = drawPosition (food world) foodColor
 
+renderWall :: World -> Picture
+renderWall world = pictures [drawPosition p wallColor | p <- merge (verticalWall world) (horizontalWall world)]
+
 render :: World -> Picture
 render world 
             | (gameState world) == GameOver = pictures 
                                               [ blank
-                                              , translate (-170) (-20) $ scale 0.5 0.5 $ color red $ text "Game Over"
+                                              , translate (-140) (7) $ scale 0.4 0.4 $ color red $ text ("Game Over")
+                                              , translate (-140) (-30) $ scale 0.3 0.3 $ color green $ text ("Your score: " ++ show (score world))
                                               ]
             | (gameState world) == Paused = pictures
                                             	            [ renderSnake world
-                                            						  , renderFood world,
-                                            						  translate (-110) (-20) $ scale 0.5 0.5 $ color blue $ text "Paused"
+                                            						  , renderFood world
+                                            						  , renderWall world
+                                            						  , translate (-110) (-20) $ scale 0.5 0.5 $ color blue $ text "Paused"
                                             						  ]
             | otherwise = pictures
 	            [ renderSnake world
 						  , renderFood world
+						  , renderWall world
 						  ]
 
 update :: Float -> World -> World

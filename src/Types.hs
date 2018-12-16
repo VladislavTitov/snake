@@ -25,6 +25,9 @@ data World = World { snake :: Snake
                    , rand :: R.StdGen
                    , limits :: (Int, Int)
                    , gameState :: GameState
+                   , verticalWall :: [(Int, Int)]
+                   , horizontalWall :: [(Int, Int)]
+                   , score :: Int
                    } deriving (Show)
 
 initialWorld = World { snake = [(-1, x) | x <- [(-20),(-21)..(-24)]]
@@ -34,7 +37,24 @@ initialWorld = World { snake = [(-1, x) | x <- [(-20),(-21)..(-24)]]
                      , rand = R.mkStdGen 0
                      , limits = (-24, 25)
                      , gameState = Playing
+                     , verticalWall = generateVerticalWall initialWorld $ fst $ randomPosition (-24, 17) $ R.mkStdGen 0
+                     , horizontalWall = generateHorizontalWall initialWorld $ fst $ randomPosition (-10, 17) $ R.mkStdGen 0
+                     , score = 0
                      }
+
+generateVerticalWall :: World -> (Int, Int) -> [(Int, Int)]
+generateVerticalWall world a | exists [(fst a, x) | x <- [(snd a + 1),(snd a + 2)..(snd a + 7)]] (snake world) = generateVerticalWall world $ fst $ randomPosition (-24, 20) $ rand world
+                             | otherwise = [(fst a, x) | x <- [(snd a + 1),(snd a + 2)..(snd a + 7)]]
+
+generateHorizontalWall :: World -> (Int, Int) -> [(Int, Int)]
+generateHorizontalWall world a | exists [(x, snd a) | x <- [(fst a + 1),(fst a + 2)..(fst a + 7)]] (snake world) = generateHorizontalWall world $ fst $ randomPosition (-24, 20) $ rand world
+                             | otherwise = [(x, snd a) | x <- [(fst a + 1),(fst a + 2)..(fst a + 7)]]
+
+exists :: Eq a => [a] -> [a] -> Bool
+exists x y = any id $ (==) <$> x <*> y
+
+--givenStringExists u theList = u `elem` map theList
+
 
 opposite :: Direction -> Direction
 opposite d = case d of
@@ -57,7 +77,7 @@ moveSnake world | gameState world == Paused = world
 
 
 eat :: World -> Position -> R.StdGen -> World
-eat world newFood newRand = let s = (snake world); n = (newdir world) in world { snake = (movePosition n $ head s):s, food = newFood, rand = newRand }
+eat world newFood newRand = let s = (snake world); n = (newdir world) in world { score = score world + 1, snake = (movePosition n $ head s):s, food = newFood, rand = newRand }
 
 removeOpposite :: World -> World
 removeOpposite world
@@ -96,9 +116,17 @@ outside p l = not $ ins p l
 handleCollision :: World -> World
 handleCollision world
     | inSnake (movePosition dir $ head s) = go
+    | inWall (movePosition dir $ head s) = go
     | outside (movePosition dir $ head s) (limits world) = go
     | otherwise = world
     where inSnake h = h `elem` s
+          inWall h = h `elem` wall
           s = snake world
+          wall = merge (verticalWall world) (horizontalWall world)
           dir = direction world
           go = world { gameState = GameOver  }
+
+merge :: [a] -> [a] -> [a]
+merge xs     []     = xs
+merge []     ys     = ys
+merge (x:xs) (y:ys) = x : y : merge xs ys
