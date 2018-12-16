@@ -48,7 +48,7 @@ render world
                                               [ blank
                                               , translate (-170) (-20) $ scale 0.5 0.5 $ color red $ text "Game Over"
                                               ]
-            | otherwise = pictures 
+            | otherwise = pictures
 	            [ renderSnake world
 						  , renderFood world
 						  ]
@@ -74,7 +74,9 @@ handleInput (EventKey (SpecialKey KeyRight) _ _ _) world
   | otherwise = removeOpposite $ world {newdir = East}
 handleInput _ world = world
 
-handleInput (EventKey (SpecialKey KeyHome) _ _ _) world = world {gameState = Playing}
+handleInput (EventKey (SpecialKey KeyHome) _ _ _) world = world {gameState = Paused}
+handleInput (EventKey (SpecialKey KeyF5) _ _ _) world = initialWorld
+
 
 window :: Display
 window = InWindow "Snake" (fieldW, fieldH) (100, 100)

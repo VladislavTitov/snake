@@ -15,6 +15,7 @@ type Snake = [Position]
 
 data GameState = Playing
                | GameOver
+               | Paused
                deriving (Show, Eq)
 
 data World = World { snake :: Snake
@@ -50,8 +51,9 @@ movePosition d (x, y) = case d of
     West -> (x - 1, y)
 
 moveSnake :: World -> World
-moveSnake world = world { snake = (movePosition newDirection $ head (snake world)):(init (snake world)), direction = newDirection } 
-  where newDirection = newdir world
+moveSnake world | gameState world == Paused = world
+                | otherwise = world { snake = (movePosition newDirection $ head (snake world)):(init (snake world)), direction = newDirection }
+                where newDirection = newdir world
 
 
 eat :: World -> Position -> R.StdGen -> World
@@ -79,6 +81,7 @@ randomFreePosition lim g s =
 advance :: World -> World
 advance w
     | (movePosition newDir $ head $ snake w) == (food w) = eaten
+    | (gameState w) == Paused = w
     | otherwise = slithered
     where newDir = newdir w
           slithered = moveSnake w 
