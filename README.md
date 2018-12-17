@@ -1,9 +1,16 @@
-# snake
+# Snake
 by
-* Nurullina Liya
+* Nurullina Liia
 * Titov Vlad
 ---
-The "**snake**" is a classic game implemented on Haskell. There is a _snake_ who slither on game field. It can _eat_ food random spawning on game field. You can control snake by saying where must go. It realizes by clicking on arrows _Up_, _Down_, _Right_, _Left_. Game will has over when snake will bump to its own tail or to any wall of room. Click _p_ for pause and s for unpausing. Click _esc_ for exit game. 
+The classic game implemented on Haskell. There is a _snake_ which slithers on the game field.
+* The goal is to grow the snake as much as possible by eating the food
+* Pieces of the food randomly spawned on the field 
+* Use _Up_, _Down_, _Right_, _Left_ buttons to control the snake. Click the one rapidly to make the snake faster
+* Game will be over when the snake bumps into its own tail or any wall
+* Click _"p"_ to pause the game and _"s"_ to un-pause or to restart the game in case you have failed
+* Click _esc_ to exit the game. 
 
-## Build
-To build project you should type `stack build`. To run project type `stack run`. That's all!)
+#### Build
+* Use `stack build` to build the project.
+* Use `stack run` to run it. Enjoy! :)
